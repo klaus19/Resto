@@ -8,6 +8,7 @@ import android.os.Handler
 import android.os.Looper
 import android.view.WindowInsets
 import android.view.WindowManager
+import android.view.animation.AnimationUtils
 import androidx.appcompat.app.AppCompatActivity
 import com.tejas.foodapp.databinding.LayoutSplashBinding
 import com.tejas.foodapp.view.activities.MainActivity
@@ -36,11 +37,7 @@ class SplashActivity: AppCompatActivity() {
                )
            }
 
-        try {
-            this.supportActionBar?.hide()
-        }catch (ex:NullPointerException){
 
-        }
 
 
 

@@ -11,8 +11,8 @@
         android:theme="@style/Theme.FoodApp">
         <activity
             android:name=".view.activities.AddUpdateDishActivity"
-            android:exported="true"
             android:label="Add Dish"
+            android:theme="@style/Theme.FoodApp.SplashScreen"
             />
         <activity android:name=".SplashActivity"
             android:exported="true"

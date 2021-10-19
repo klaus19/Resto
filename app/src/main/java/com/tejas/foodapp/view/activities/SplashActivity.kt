@@ -1,4 +1,4 @@
-package com.tejas.foodapp
+package com.tejas.foodapp.view.activities
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -8,10 +8,8 @@ import android.os.Handler
 import android.os.Looper
 import android.view.WindowInsets
 import android.view.WindowManager
-import android.view.animation.AnimationUtils
 import androidx.appcompat.app.AppCompatActivity
 import com.tejas.foodapp.databinding.LayoutSplashBinding
-import com.tejas.foodapp.view.activities.MainActivity
 
 @SuppressLint("CustomSplashScreen")
 class SplashActivity: AppCompatActivity() {

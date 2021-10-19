@@ -9,4 +9,19 @@
     <color name="white">#FFFFFFFF</color>
     <color name="shadow1">#c0ca33</color>
     <color name="sweet">#8c9900</color>
+
+    <color name="primary_color">#388E3C</color>
+    <color name="primary_dark_color">#00600F</color>
+    <color name="primary_light_color">#6ABF69</color>
+
+    <color name="secondary_color">#81C784</color>
+    <color name="secondary_dark_color">#519657</color>
+    <color name="secondary_light_color">#B2FAB4</color>
+    <color name="dish_image_background">#E1E1E1</color>
+
+    <!--TODO Step 4: Add the color values to the colors.xml file.-->
+    <!--START-->
+    <color name="blue_grey_700">#37474f</color>
+    <color name="grey_900">#212121</color>
+    <!--END-->
 </resources>

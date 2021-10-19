@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/PRATIK/AndroidStudioProjects/FoodApp/app/src/main/res/drawable/ic_add_a_photo.xml" value="0.2526041666666667" />
         <entry key="..\:/Users/PRATIK/AndroidStudioProjects/FoodApp/app/src/main/res/layout/activity_add_update_dish.xml" value="0.23645833333333333" />
         <entry key="..\:/Users/PRATIK/AndroidStudioProjects/FoodApp/app/src/main/res/layout/activity_main.xml" value="0.2" />
         <entry key="..\:/Users/PRATIK/AndroidStudioProjects/FoodApp/app/src/main/res/layout/fragment_all_dishes.xml" value="0.23645833333333333" />

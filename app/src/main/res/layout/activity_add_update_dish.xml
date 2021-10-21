@@ -34,7 +34,9 @@
             <FrameLayout
                 android:id="@+id/fl_select_image"
                 android:layout_width="match_parent"
-                android:layout_height="30dp"
+                android:layout_height="200dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">

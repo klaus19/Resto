@@ -1,21 +1,29 @@
 package com.tejas.foodapp.view.activities
 
 import android.Manifest
+import android.app.Activity
 import android.app.Dialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.MediaStore
 import android.provider.Settings
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
+import com.karumi.dexter.listener.PermissionDeniedResponse
+import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
+import com.karumi.dexter.listener.single.PermissionListener
 import com.tejas.foodapp.R
 import com.tejas.foodapp.databinding.ActivityAddUpdateDishBinding
 import com.tejas.foodapp.databinding.DialogCustomImageSelectionBinding
@@ -48,6 +56,50 @@ class AddUpdateDishActivity : AppCompatActivity(),View.OnClickListener {
         }
     }
 
+    // TODO Step 3: Override the onActivityResult method.
+    // START
+    /**
+     * Receive the result from a previous call to
+     * {@link #startActivityForResult(Intent, int)}.  This follows the
+     * related Activity API as described there in
+     * {@link Activity#onActivityResult(int, int, Intent)}.
+     *
+     * @param requestCode The integer request code originally supplied to
+     *                    startActivityForResult(), allowing you to identify who this
+     *                    result came from.
+     * @param resultCode The integer result code returned by the child activity
+     *                   through its setResult().
+     * @param data An Intent, which can return result data to the caller
+     *               (various data can be attached to Intent "extras").
+     */
+    public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == CAMERA) {
+
+                // TODO Step 4: Get Image from Camera and set it to the ImageView
+                // START
+                val thumbnail: Bitmap = data!!.extras!!.get("data") as Bitmap // Bitmap from camera
+                mBinding.ivDishImage.setImageBitmap(thumbnail) // Set to the imageView.
+                // END
+
+                // TODO Step 6: Replace the add image icon with edit icon.
+                // START
+                // Replace the add icon with edit icon once the image is selected.
+                mBinding.ivAddDishImage.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        this@AddUpdateDishActivity,
+                        R.drawable.ic_vector_edit
+                    )
+                )
+                // END
+            }
+        } else if (resultCode == Activity.RESULT_CANCELED) {
+            Log.e("Cancelled", "Cancelled")
+        }
+    }
+    // END
+
     /**
      * A function for ActionBar setup.
      */
@@ -76,8 +128,6 @@ class AddUpdateDishActivity : AppCompatActivity(),View.OnClickListener {
 
         binding.tvCamera.setOnClickListener {
 
-            // TODO Step 3: Let ask for the permission while selecting the image from camera using Dexter Library. And Remove the toast message.
-            // START
             Dexter.withContext(this@AddUpdateDishActivity)
                 .withPermissions(
                     Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -89,13 +139,10 @@ class AddUpdateDishActivity : AppCompatActivity(),View.OnClickListener {
                         // Here after all the permission are granted launch the CAMERA to capture an image.
                         if (report!!.areAllPermissionsGranted()) {
 
-                            // TODO Step 4: Show the Toast message for now just to know that we have the permission.
+                            // TODO Step 2: Start camera using the Image capture action. Get the result in the onActivityResult method as we are using startActivityForResult.
                             // START
-                            Toast.makeText(
-                                this@AddUpdateDishActivity,
-                                "You have the Camera permission now to capture image.",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                            startActivityForResult(intent, CAMERA)
                             // END
                         }
                     }
@@ -104,21 +151,16 @@ class AddUpdateDishActivity : AppCompatActivity(),View.OnClickListener {
                         permissions: MutableList<PermissionRequest>?,
                         token: PermissionToken?
                     ) {
-                        // TODO Step 6: Show the alert dialog
-                        // START
                         showRationalDialogForPermissions()
-                        // END
                     }
                 }).onSameThread()
                 .check()
-            // END
 
             dialog.dismiss()
         }
 
         binding.tvGallery.setOnClickListener {
 
-            // TODO Step 7: Ask for the permission while selecting the image from Gallery using Dexter Library. And Remove the toast message.
             Dexter.withContext(this@AddUpdateDishActivity)
                 .withPermissions(
                     Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -129,14 +171,11 @@ class AddUpdateDishActivity : AppCompatActivity(),View.OnClickListener {
 
                         // Here after all the permission are granted launch the gallery to select and image.
                         if (report!!.areAllPermissionsGranted()) {
-                            // TODO Step 8: Show the Toast message for now just to know that we have the permission.
-                            // START
                             Toast.makeText(
                                 this@AddUpdateDishActivity,
                                 "You have the Gallery permission now to select image.",
                                 Toast.LENGTH_SHORT
                             ).show()
-                            // END
                         }
                     }
 
@@ -148,7 +187,6 @@ class AddUpdateDishActivity : AppCompatActivity(),View.OnClickListener {
                     }
                 }).onSameThread()
                 .check()
-            // END
             dialog.dismiss()
         }
 
@@ -157,8 +195,6 @@ class AddUpdateDishActivity : AppCompatActivity(),View.OnClickListener {
     }
 
 
-    // TODO Step 5: Create a function to show the alert message that the permission is necessary to proceed further if user deny it. And ask him to allow it from setting.
-    // START
     /**
      * A function used to show the alert dialog when the permissions are denied and need to allow it from settings app info.
      */
@@ -180,5 +216,12 @@ class AddUpdateDishActivity : AppCompatActivity(),View.OnClickListener {
             .setNegativeButton("Cancel") { dialog, _ ->
                 dialog.dismiss()
             }.show()
+    }
+
+
+    // TODO Step 1: Define the Companion Object to define the constants used in the class. We will define the constant for camera.
+    // START
+    companion object {
+        private const val CAMERA = 1
     }
 }

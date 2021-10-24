@@ -56,8 +56,6 @@ class AddUpdateDishActivity : AppCompatActivity(),View.OnClickListener {
         }
     }
 
-    // TODO Step 3: Override the onActivityResult method.
-    // START
     /**
      * Receive the result from a previous call to
      * {@link #startActivityForResult(Intent, int)}.  This follows the
@@ -77,28 +75,44 @@ class AddUpdateDishActivity : AppCompatActivity(),View.OnClickListener {
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == CAMERA) {
 
-                // TODO Step 4: Get Image from Camera and set it to the ImageView
-                // START
-                val thumbnail: Bitmap = data!!.extras!!.get("data") as Bitmap // Bitmap from camera
-                mBinding.ivDishImage.setImageBitmap(thumbnail) // Set to the imageView.
-                // END
+                data?.extras?.let {
+                    val thumbnail: Bitmap =
+                        data.extras!!.get("data") as Bitmap // Bitmap from camera
+                    mBinding.ivDishImage.setImageBitmap(thumbnail) // Set to the imageView.
 
-                // TODO Step 6: Replace the add image icon with edit icon.
-                // START
-                // Replace the add icon with edit icon once the image is selected.
-                mBinding.ivAddDishImage.setImageDrawable(
-                    ContextCompat.getDrawable(
-                        this@AddUpdateDishActivity,
-                        R.drawable.ic_vector_edit
+                    // Replace the add icon with edit icon once the image is selected.
+                    mBinding.ivAddDishImage.setImageDrawable(
+                        ContextCompat.getDrawable(
+                            this@AddUpdateDishActivity,
+                            R.drawable.ic_vector_edit
+                        )
                     )
-                )
-                // END
+                }
             }
+            // TODO Step 3: Get the selected image from gallery. The selected will be in form of URI so set it to the Dish ImageView.
+            // START
+            else if (requestCode == GALLERY) {
+
+                data?.let {
+                    // Here we will get the select image URI.
+                    val selectedPhotoUri = data.data
+
+                    mBinding.ivDishImage.setImageURI(selectedPhotoUri) // Set the selected image from GALLERY to imageView.
+
+                    // Replace the add icon with edit icon once the image is selected.
+                    mBinding.ivAddDishImage.setImageDrawable(
+                        ContextCompat.getDrawable(
+                            this@AddUpdateDishActivity,
+                            R.drawable.ic_vector_edit
+                        )
+                    )
+                }
+            }
+            // END
         } else if (resultCode == Activity.RESULT_CANCELED) {
             Log.e("Cancelled", "Cancelled")
         }
     }
-    // END
 
     /**
      * A function for ActionBar setup.
@@ -131,19 +145,17 @@ class AddUpdateDishActivity : AppCompatActivity(),View.OnClickListener {
             Dexter.withContext(this@AddUpdateDishActivity)
                 .withPermissions(
                     Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
                     Manifest.permission.CAMERA
                 )
                 .withListener(object : MultiplePermissionsListener {
                     override fun onPermissionsChecked(report: MultiplePermissionsReport?) {
                         // Here after all the permission are granted launch the CAMERA to capture an image.
-                        if (report!!.areAllPermissionsGranted()) {
+                        report?.let {
+                            if (report.areAllPermissionsGranted()) {
 
-                            // TODO Step 2: Start camera using the Image capture action. Get the result in the onActivityResult method as we are using startActivityForResult.
-                            // START
-                            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                            startActivityForResult(intent, CAMERA)
-                            // END
+                                val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                                startActivityForResult(intent, CAMERA)
+                            }
                         }
                     }
 
@@ -161,32 +173,39 @@ class AddUpdateDishActivity : AppCompatActivity(),View.OnClickListener {
 
         binding.tvGallery.setOnClickListener {
 
-            Dexter.withContext(this@AddUpdateDishActivity)
-                .withPermissions(
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                )
-                .withListener(object : MultiplePermissionsListener {
-                    override fun onPermissionsChecked(report: MultiplePermissionsReport?) {
+            Dexter.withContext(this)
+                .withPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                .withListener(object : PermissionListener {
+                    override fun onPermissionGranted(response: PermissionGrantedResponse) {
+                        // TODO Step 2: Launch the gallery for Image selection using the constant.
+                        // START
+                        val galleryIntent = Intent(
+                            Intent.ACTION_PICK,
+                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                        )
 
-                        // Here after all the permission are granted launch the gallery to select and image.
-                        if (report!!.areAllPermissionsGranted()) {
-                            Toast.makeText(
-                                this@AddUpdateDishActivity,
-                                "You have the Gallery permission now to select image.",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
+                        startActivityForResult(galleryIntent, GALLERY)
+                        // END
+                    }
+
+                    override fun onPermissionDenied(response: PermissionDeniedResponse) {
+                        Toast.makeText(
+                            this@AddUpdateDishActivity,
+                            "You have denied the storage permission to select image.",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
 
                     override fun onPermissionRationaleShouldBeShown(
-                        permissions: MutableList<PermissionRequest>?,
-                        token: PermissionToken?
+                        permission: PermissionRequest,
+                        token: PermissionToken
                     ) {
                         showRationalDialogForPermissions()
                     }
-                }).onSameThread()
+                })
+                .onSameThread()
                 .check()
+
             dialog.dismiss()
         }
 
@@ -219,9 +238,12 @@ class AddUpdateDishActivity : AppCompatActivity(),View.OnClickListener {
     }
 
 
-    // TODO Step 1: Define the Companion Object to define the constants used in the class. We will define the constant for camera.
-    // START
     companion object {
         private const val CAMERA = 1
+
+        // TODO Step 1: Add the constant for Gallery.
+        // START
+        private const val GALLERY = 2
+        // END
     }
 }

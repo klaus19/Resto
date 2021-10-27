@@ -16,6 +16,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import com.bumptech.glide.Glide
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -76,11 +77,21 @@ class AddUpdateDishActivity : AppCompatActivity(),View.OnClickListener {
             if (requestCode == CAMERA) {
 
                 data?.extras?.let {
+
                     val thumbnail: Bitmap =
                         data.extras!!.get("data") as Bitmap // Bitmap from camera
-                    mBinding.ivDishImage.setImageBitmap(thumbnail) // Set to the imageView.
+                    // TODO Step 2: Here we will replace the setImageBitmap using glide as below.
+                    // START
+                    // mBinding.ivDishImage.setImageBitmap(thumbnail) // Set to the imageView.
 
-                    // Replace the add icon with edit icon once the image is selected.
+                    // Set Capture Image bitmap to the imageView using Glide
+                    Glide.with(this@AddUpdateDishActivity)
+                        .load(thumbnail)
+                        .centerCrop()
+                        .into(mBinding.ivDishImage)
+                    // END
+
+                    // Replace the add icon with edit icon once the image is loaded.
                     mBinding.ivAddDishImage.setImageDrawable(
                         ContextCompat.getDrawable(
                             this@AddUpdateDishActivity,
@@ -88,16 +99,22 @@ class AddUpdateDishActivity : AppCompatActivity(),View.OnClickListener {
                         )
                     )
                 }
-            }
-            // TODO Step 3: Get the selected image from gallery. The selected will be in form of URI so set it to the Dish ImageView.
-            // START
-            else if (requestCode == GALLERY) {
+            } else if (requestCode == GALLERY) {
 
                 data?.let {
                     // Here we will get the select image URI.
                     val selectedPhotoUri = data.data
 
-                    mBinding.ivDishImage.setImageURI(selectedPhotoUri) // Set the selected image from GALLERY to imageView.
+                    // TODO Step 3: Here we will replace the setImageURI using Glide as below.
+                    // START
+                    // mBinding.ivDishImage.setImageURI(selectedPhotoUri) // Set the selected image from GALLERY to imageView.
+
+                    // Set Selected Image bitmap to the imageView using Glide
+                    Glide.with(this@AddUpdateDishActivity)
+                        .load(selectedPhotoUri)
+                        .centerCrop()
+                        .into(mBinding.ivDishImage)
+                    // END
 
                     // Replace the add icon with edit icon once the image is selected.
                     mBinding.ivAddDishImage.setImageDrawable(
@@ -108,7 +125,6 @@ class AddUpdateDishActivity : AppCompatActivity(),View.OnClickListener {
                     )
                 }
             }
-            // END
         } else if (resultCode == Activity.RESULT_CANCELED) {
             Log.e("Cancelled", "Cancelled")
         }
@@ -149,8 +165,9 @@ class AddUpdateDishActivity : AppCompatActivity(),View.OnClickListener {
                 )
                 .withListener(object : MultiplePermissionsListener {
                     override fun onPermissionsChecked(report: MultiplePermissionsReport?) {
-                        // Here after all the permission are granted launch the CAMERA to capture an image.
+
                         report?.let {
+                            // Here after all the permission are granted launch the CAMERA to capture an image.
                             if (report.areAllPermissionsGranted()) {
 
                                 val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
@@ -177,15 +194,12 @@ class AddUpdateDishActivity : AppCompatActivity(),View.OnClickListener {
                 .withPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
                 .withListener(object : PermissionListener {
                     override fun onPermissionGranted(response: PermissionGrantedResponse) {
-                        // TODO Step 2: Launch the gallery for Image selection using the constant.
-                        // START
                         val galleryIntent = Intent(
                             Intent.ACTION_PICK,
                             MediaStore.Images.Media.EXTERNAL_CONTENT_URI
                         )
 
                         startActivityForResult(galleryIntent, GALLERY)
-                        // END
                     }
 
                     override fun onPermissionDenied(response: PermissionDeniedResponse) {
@@ -241,9 +255,6 @@ class AddUpdateDishActivity : AppCompatActivity(),View.OnClickListener {
     companion object {
         private const val CAMERA = 1
 
-        // TODO Step 1: Add the constant for Gallery.
-        // START
         private const val GALLERY = 2
-        // END
     }
 }

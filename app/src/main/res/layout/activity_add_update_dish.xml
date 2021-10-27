@@ -47,6 +47,7 @@
                     android:layout_height="match_parent"
                     android:background="@color/dish_image_background"
                     android:contentDescription="@string/image_contentDescription"
+                    tools:srcCompat="@tools:sample/avatars"
                     android:scaleType="fitXY" />
 
                 <ImageView
